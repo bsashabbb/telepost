@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Редактировать статью</title>
+    <script>
+        // Функция проверки заполненности полей
+        function checkForm() {
+            const title = document.getElementById('title').value.trim();
+            const content = document.getElementById('content').value.trim();
+            const submitButton = document.getElementById('submit-button');
+
+            // Если поля заполнены, активируем кнопку
+            if (title !== '' && content !== '') {
+                submitButton.disabled = false;
+                submitButton.classList.add('active');
+            } else {
+                submitButton.disabled = true;
+                submitButton.classList.remove('active');
+            }
+        }
+
+        // Добавляем проверку форм при вводе текста
+        document.addEventListener('DOMContentLoaded', function() {
+            const titleInput = document.getElementById('title');
+            const contentInput = document.getElementById('content');
+
+            titleInput.addEventListener('input', checkForm);
+            contentInput.addEventListener('input', checkForm);
+        });
+    </script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>Редактировать статью</h1>
+    <form method="POST">
+        <label for="title">Заголовок статьи:</label><br>
+        <input type="text" id="title" name="title" value="{{ title }}" required><br><br>
+
+        <label for="content">Содержание:</label><br>
+        <textarea id="content" name="content" rows="10" required>{{ content }}</textarea><br><br>
+
+        <!-- Кнопка "Сохранить изменения", изначально неактивная -->
+        <button type="submit" id="submit-button" class="button save-button" disabled>Сохранить изменения</button>
+    </form>
+
+    <!-- Кнопка возврата -->
+    <a href="/" class="button return-home">На главную</a>
+</body>
+</html>
