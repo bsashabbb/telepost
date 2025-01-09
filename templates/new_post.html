@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<title>Создать новую статью</title>
+<script>
+// Проверка заполненности полей
+function checkForm(event) {
+    const title = document.getElementById('title').value.trim();
+    const content = document.getElementById('content').value.trim();
+    const submitButton = document.getElementById('submit-button');
+    // Меняем состояние кнопки
+    if (title !== '' && content !== '') {
+        submitButton.disabled = false; 
+    } else {
+        submitButton.disabled = true;
+        event.preventDefault(); // Предотвращаем отправку формы, если поля не заполнены
+    }
+}
+
+// Добавляем прослушивание событий при вводе и отправке формы
+document.addEventListener('DOMContentLoaded', function() {
+    const inputs = [document.getElementById('title'), document.getElementById('content')];
+    inputs.forEach(input => input.addEventListener('input', checkForm));
+    checkForm(); // Проверяем поля при загрузке страницы
+
+    const form = document.querySelector('form');
+    form.addEventListener('submit', checkForm); // Добавляем обработчик для submit
+});
+</script>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<h1>Создать новую статью</h1>
+<form method="POST"> 
+    <label for="title">Заголовок статьи:</label><br>
+    <input type="text" id="title" name="title" required><br><br>
+    <label for="content">Содержание:</label><br>
+    <textarea id="content" name="content" rows="10" required></textarea><br><br>
+    <!-- Кнопка "Опубликовать" будет активна только при заполнении всех полей -->
+    <button type="submit" id="submit-button" class="button save-button" disabled>Опубликовать</button>
+</form>
+<!-- Кнопка для возврата на главную -->
+<a href="/" class="button return-home">На главную</a>
+</body>
+</html>
