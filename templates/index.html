@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Главная страница</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>Список публикаций</h1>
+    <a href="/new">Добавить новую статью</a>
+    <ul>
+        <!-- Перебираем все посты, полученные из базы данных -->
+        {% for post in posts %}
+            <li><a href="/post/{{ post[0] }}">{{ post[1] }}</a></li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
