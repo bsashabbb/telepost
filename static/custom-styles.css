@@ -1,0 +1,121 @@
+/* Общие стили для кастомных блоков */
+.custom-tag {
+    padding: 15px;
+    margin: 10px 0;
+    border-left: 5px solid;
+    border-radius: 5px;
+    position: relative;
+    padding-left: 50px;
+    background-color: #f9f9f9;
+}
+
+.custom-tag::before {
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 20px;
+}
+
+/* Стили для каждого типа кастомного блока */
+.custom-tag.note {
+    border-color: #00bcd4; /* Голубой */
+    background-color: #e0f7fa;
+}
+.custom-tag.note::before {
+    content: "\f05a"; /* Иконка заметки */
+    color: #00bcd4;
+}
+
+.custom-tag.warning {
+    border-color: #f44336; /* Красный */
+    background-color: #ffebee;
+}
+.custom-tag.warning::before {
+    content: "\f071"; /* Иконка предупреждения */
+    color: #f44336;
+}
+
+.custom-tag.info {
+    border-color: #4caf50; /* Зеленый */
+    background-color: #e8f5e9;
+}
+.custom-tag.info::before {
+    content: "\f129"; /* Иконка информации */
+    color: #4caf50;
+}
+
+.custom-tag.tip {
+    border-color: #ff9800; /* Оранжевый */
+    background-color: #fff3e0;
+}
+.custom-tag.tip::before {
+    content: "\f0eb"; /* Иконка совета */
+    color: #ff9800;
+}
+
+.custom-tag.error {
+    border-color: #e91e63; /* Розовый */
+    background-color: #fce4ec;
+}
+.custom-tag.error::before {
+    content: "\f057"; /* Иконка ошибки */
+    color: #e91e63;
+}
+
+.custom-tag.success {
+    border-color: #8bc34a; /* Светло-зеленый */
+    background-color: #f1f8e9;
+}
+.custom-tag.success::before {
+    content: "\f058"; /* Иконка успеха */
+    color: #8bc34a;
+}
+
+.custom-tag.important {
+    border-color: #ff5722; /* Темно-оранжевый */
+    background-color: #fbe9e7;
+}
+.custom-tag.important::before {
+    content: "\f06a"; /* Иконка важного */
+    color: #ff5722;
+}
+
+.custom-tag.code {
+    border-color: #607d8b; /* Серо-голубой */
+    background-color: #eceff1;
+}
+.custom-tag.code::before {
+    content: "\f121"; /* Иконка кода */
+    color: #607d8b;
+}
+
+.custom-tag.lightbulb {
+    border-color: #ffc107; /* Желтый */
+    background-color: #fff8e1;
+}
+.custom-tag.lightbulb::before {
+    content: "\f0eb"; /* Иконка лампочки */
+    color: #ffc107;
+}
+
+.custom-tag.pencil {
+    border-color: #009688; /* Бирюзовый */
+    background-color: #e0f2f1;
+}
+.custom-tag.pencil::before {
+    content: "\f303"; /* Иконка карандаша */
+    color: #009688;
+}
+
+/* Новый тип примечания без иконки */
+.custom-tag.plain {
+    border-color: #9e9e9e; /* Серый */
+    background-color: #f5f5f5;
+    padding-left: 15px; /* Убираем отступ для иконки */
+}
+.custom-tag.plain::before {
+    display: none; /* Скрываем иконку */
+}
