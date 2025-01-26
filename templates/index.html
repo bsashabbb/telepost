@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ru">
+<meta charset="UTF-8" content="width=device-width, initial-scale=1.0">
+<head>
+    <title>Главная страница</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        li a {
+            width: 100%;
+        }
+
+        li {
+            justify-content: center;
+            display: flex;
+        }
+
+        ul {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 15px;
+            padding: 0;
+        }
+
+        @media (max-width: 480px) {
+            ul {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    {% include 'header.html' %}
+    <h1>Список публикаций</h1>
+    <!-- <a href="/new" class="not-header">Добавить новую статью</a> -->
+    <ul>
+        <!-- Перебираем все посты, полученные из базы данных -->
+        {% for post in posts %}
+            <li><a href="/post/{{ post[0] }}" class="post-link">{{ post[1] }}</a></li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
