@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>API TelePost</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .endpoint {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        .method {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .get { background: #e8f5e9; color: #2e7d32; }
+        .post { background: #fff3e0; color: #ef6c00; }
+
+        pre {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            overflow-x: auto;
+        }
+
+        h2 {
+            margin-top: 40px;
+            color: #2c3e50;
+        }
+    </style>
+
+    <style>
+        /* Общие стили для API */
+        .endpoint {
+            margin: 15px 0;
+            padding: 15px;
+        }
+
+        /* Примеры кода с горизонтальной прокруткой */
+        pre {
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            background: #f8f9fa;
+            padding: 12px;
+        }
+
+        /* Адаптация для мобильных */
+        @media (max-width: 768px) {
+            .method {
+                display: block;
+                margin: 5px 0;
+            }
+
+            .endpoint {
+                padding: 10px;
+            }
+
+            pre {
+                font-size: 12px;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+{% include 'header.html' %}
+
+<div class="help-content">
+    <h1>🔗 Все API-эндпоинты TelePost</h1>
+
+    <!-- Главная страница (GET и POST) -->
+    <div class="endpoint">
+        <div class="method get">GET</div>
+        <div class="method post">POST</div>
+        <code>/</code>
+        <p>Получить список всех постов, созданных с текущего IP-адреса. Доступно через GET и POST.</p>
+
+        <h3>GET-запрос:</h3>
+        <pre>curl http://localhost:5000/</pre>
+
+        <h3>POST-запрос:</h3>
+        <pre>curl -X POST http://localhost:5000/</pre>
+
+        <p>Пример ответа (для обоих методов):</p>
+        <pre>{
+    "ok": true,
+    "result": [
+        {"id": 1, "title": "Заголовок 1", "author": "127.0.0.1"},
+        {"id": 2, "title": "Заголовок 2", "author": "127.0.0.1"}
+    ]
+}</pre>
+    </div>
+
+    <!-- Создание поста (GET и POST) -->
+    <div class="endpoint">
+        <div class="method get">GET</div>
+        <div class="method post">POST</div>
+        <code>/new</code>
+        <p>Создать новый пост. Доступно через GET (форма) и POST (отправка данных).</p>
+
+        <h3>GET-запрос:</h3>
+        <p>Получить HTML-форму для создания поста.</p>
+        <pre>curl http://localhost:5000/new</pre>
+
+        <h3>POST-запрос:</h3>
+        <p>Параметры:</p>
+        <ul>
+            <li><code>title</code> (строка, минимум 5 символов)</li>
+            <li><code>content</code> (строка, минимум 10 символов)</li>
+        </ul>
+        <pre>curl -X POST -F "title=Новый пост" -F "content=Текст поста" http://localhost:5000/new</pre>
+        <p>Пример ответа:</p>
+        <pre>{
+    "ok": true,
+    "result": {
+        "id": 3,
+        "title": "Новый пост",
+        "content": "Текст поста",
+        "author": "127.0.0.1"
+    }
+}</pre>
+    </div>
+
+    <!-- Просмотр поста (GET и POST) -->
+    <div class="endpoint">
+        <div class="method get">GET</div>
+        <div class="method post">POST</div>
+        <code>/post/&lt;id&gt;</code>
+        <p>Получить пост по его ID. Доступно через GET (HTML) и POST (JSON).</p>
+
+        <h3>GET-запрос:</h3>
+        <p>Получить пост в формате HTML.</p>
+        <pre>curl http://localhost:5000/post/1</pre>
+        <p>Пример ответа:</p>
+        <pre>&lt;h1&gt;Заголовок поста&lt;/h1&gt;
+&lt;div class="post-content"&gt;Содержание поста&lt;/div&gt;</pre>
+
+        <h3>POST-запрос:</h3>
+        <p>Получить пост в формате JSON.</p>
+        <pre>curl -X POST http://localhost:5000/post/1</pre>
+        <p>Пример ответа:</p>
+        <pre>{
+    "ok": true,
+    "result": {
+        "id": 1,
+        "title": "Заголовок поста",
+        "content": "Содержание поста",
+        "author": "127.0.0.1"
+    }
+}</pre>
+    </div>
+
+    <!-- Сырой текст поста (GET и POST) -->
+    <div class="endpoint">
+        <div class="method get">GET</div>
+        <div class="method post">POST</div>
+        <code>/raw/&lt;id&gt;</code>
+        <p>Получить сырой Markdown-контент поста. Доступно через GET (HTML) и POST (JSON).</p>
+
+        <h3>GET-запрос:</h3>
+        <p>Получить сырой Markdown в формате HTML.</p>
+        <pre>curl http://localhost:5000/raw/1</pre>
+        <p>Пример ответа:</p>
+        <pre>&lt;pre&gt;# Заголовок поста
+Текст поста&lt;/pre&gt;</pre>
+
+        <h3>POST-запрос:</h3>
+        <p>Получить сырой Markdown в формате JSON.</p>
+        <pre>curl -X POST http://localhost:5000/raw/1</pre>
+        <p>Пример ответа:</p>
+        <pre>{
+    "ok": true,
+    "result": "# Заголовок поста\nТекст поста"
+}</pre>
+    </div>
+
+    <!-- Редактирование поста (GET и POST) -->
+    <div class="endpoint">
+        <div class="method get">GET</div>
+        <div class="method post">POST</div>
+        <code>/edit/&lt;id&gt;</code>
+        <p>Редактировать пост. Доступно через GET (форма) и POST (отправка данных).</p>
+
+        <h3>GET-запрос:</h3>
+        <p>Получить HTML-форму для редактирования поста.</p>
+        <pre>curl http://localhost:5000/edit/1</pre>
+
+        <h3>POST-запрос:</h3>
+        <p>Параметры:</p>
+        <ul>
+            <li><code>title</code> (строка, минимум 5 символов)</li>
+            <li><code>content</code> (строка, минимум 10 символов)</li>
+        </ul>
+        <pre>curl -X POST -F "title=Обновлённый заголовок" -F "content=Обновлённый текст" http://localhost:5000/edit/1</pre>
+        <p>Пример ответа:</p>
+        <pre>{
+    "ok": true,
+    "result": {
+        "id": 1,
+        "title": "Обновлённый заголовок",
+        "content": "Обновлённый текст",
+        "author": "127.0.0.1"
+    }
+}</pre>
+    </div>
+
+    <!-- Удаление поста (только POST) -->
+    <div class="endpoint">
+        <div class="method post">POST</div>
+        <code>/delete/&lt;id&gt;</code>
+        <p>Удалить пост (требуется IP автора).</p>
+        <pre>curl -X POST http://localhost:5000/delete/1</pre>
+        <p>Пример ответа:</p>
+        <pre>{
+    "ok": true,
+    "result": "Post deleted"
+}</pre>
+    </div>
+
+    <!-- Ответы API -->
+    <h2>📤 Форматы ответов</h2>
+    <div class="endpoint">
+        <h3>Успех (200 OK):</h3>
+        <pre>{
+    "ok": true,
+    "result": { ... }
+}</pre>
+
+        <h3>Ошибка (400 Bad Request):</h3>
+        <pre>{
+    "ok": false,
+    "error_code": 400,
+    "description": "Title must be at least 5 characters long"
+}</pre>
+
+        <h3>Ошибка (403 Forbidden):</h3>
+        <pre>{
+    "ok": false,
+    "error_code": 403,
+    "description": "You are not authorized to edit this post"
+}</pre>
+
+        <h3>Ошибка (404 Not Found):</h3>
+        <pre>{
+    "ok": false,
+    "error_code": 404,
+    "description": "Post Not Found"
+}</pre>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,163 @@
+<header class="header">
+    <div class="left-section">
+        <a href="https://t.me/TelePost_site" class="telegram-logo">
+            <img src="/static/telegram.jpg" alt="Telegram" class="icon">
+        </a>
+        <nav class="nav-links">
+            <a href="/help" class="nav-link">
+                <i class="fas fa-question-circle"></i> Помощь
+            </a>
+            <a href="/api-docs" class="nav-link api-link">
+                <i class="fas fa-code"></i> API
+            </a>
+        </nav>
+    </div>
+
+    <div class="center-section">
+        <a href="/" class="main-link">
+            <div class="logo">
+                <img src="{{ url_for('static', filename='telepost.jpg') }}" class="icon" alt="TelePost">TelePost
+            </div>
+        </a>
+    </div>
+
+    <div class="right-section">
+        <a href="/new" class="add-post">+</a>
+    </div>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</header>
+
+<br><br>
+
+<style>
+    /* Стили для шапки */
+    header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        background-color: rgba(135, 206, 250, 0.7);
+        backdrop-filter: blur(5px);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        z-index: 100;
+        transition: top 0.3s ease;
+        color: #ADD8E6;
+        padding: 10px;
+    }
+
+    header.hidden {
+        top: -100px;
+    }
+
+    .left-section {
+        display: flex;
+        align-items: center;
+        gap: 20px; /* Расстояние между элементами */
+    }
+
+    .nav-links {
+        display: flex;
+        gap: 15px; /* Расстояние между ссылками */
+    }
+
+    .center-section {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .right-section {
+        display: flex;
+        align-items: center;
+        margin-right: 20px; /* Сдвигаем кнопку "+" ещё на 10px левее */
+    }
+
+    .logo {
+        font-size: 35px;
+        font-weight: bold;
+        color: #039be5;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+    }
+
+    .add-post {
+        display: inline-block;
+        color: white;
+        background-color: #3498db;
+        font-weight: bold;
+        border-radius: 50%;
+        text-align: center;
+        text-decoration: none;
+        font-size: 30px;
+        padding: 5px 15px;
+    }
+
+    .main-link {
+        text-decoration: none;
+    }
+
+    .main-link:hover {
+        background: none;
+    }
+
+    /* Стили для ссылок "Помощь" и "API" */
+    .nav-link {
+        text-decoration: none;
+        color: #039be5; /* Цвет текста */
+        font-size: 18px;
+        font-weight: 500;
+        padding: 8px 12px;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .nav-link:hover {
+        background-color: rgba(3, 155, 229, 0.1); /* Фон при наведении */
+        color: #0277bd; /* Цвет текста при наведении */
+    }
+
+    .nav-link i {
+        font-size: 20px;
+    }
+
+    /* Скрываем "API" на маленьких экранах */
+    @media (max-width: 1000px) {
+        .nav-link.api-link {
+            display: none;
+        }
+    }
+</style>
+
+<script>
+    // Скрипт для скрытия шапки при прокрутке
+    var lastScrollTop = 0;
+
+    window.addEventListener('scroll', function() {
+        var header = document.querySelector('header');
+        var st = window.pageYOffset || document.documentElement.scrollTop;
+
+        if (st > lastScrollTop) {
+            header.classList.add('hidden');
+        } else {
+            header.classList.remove('hidden');
+        }
+
+        lastScrollTop = st <= 0 ? 0 : st;
+    });
+</script>

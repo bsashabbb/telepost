@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="ru">
+<meta charset="UTF-8">
+<head>
+    <title>Создать новую статью</title>
+    <script>
+        // Проверка заполненности полей
+        function checkForm(event) {
+            const title = document.getElementById('title').value.trim();
+            const content = document.getElementById('content').value.trim();
+            const submitButton = document.getElementById('submit-button');
+
+            // Меняем состояние кнопки
+            if (title !== '' && content !== '' && title.length >= 5 && content.length >= 10) {
+                submitButton.classList.add('active');
+            } else {
+                submitButton.classList.remove('active');
+                event.preventDefault(); // Предотвращаем отправку формы, если поля не заполнены
+            }
+        }
+
+        // Переход на главную страницу с подтверждением
+        function goToMain() {
+            const title = document.getElementById('title').value.trim();
+            const content = document.getElementById('content').value.trim();
+
+            if (title === '' && content === '') {
+                window.location.href = '/';
+            } else {
+                customConfirm('Вы уверены, что хотите перейти на главную страницу? Изменения не сохранятся.')
+                    .then((result) => {
+                    if (result) {
+                        window.location.href = '/';
+                    }
+                });
+            }
+        }
+
+        // Показать кастомный confirm
+        function customConfirm(message) {
+            return new Promise((resolve) => {
+                const confirmMessage = document.getElementById('customConfirmMessage');
+                confirmMessage.textContent = message;
+                document.getElementById('customConfirmOverlay').style.display = 'flex';
+
+                // Обработчики для кнопок "ОК" и "Отмена"
+                document.getElementById('customConfirmOK').onclick = function () {
+                    resolve(true); // Возвращаем true
+                    hideCustomConfirm();
+                };
+
+                document.getElementById('customConfirmCancel').onclick = function () {
+                    resolve(false); // Возвращаем false
+                    hideCustomConfirm();
+                };
+            });
+        }
+
+        // Скрыть кастомный confirm
+        function hideCustomConfirm() {
+            document.getElementById('customConfirmOverlay').style.display = 'none';
+        }
+
+        // Автоматическое изменение высоты текстового поля
+        function autoResizeTextarea(textarea) {
+            textarea.style.height = 'auto'; // Сбрасываем высоту
+            textarea.style.height = textarea.scrollHeight + 'px'; // Устанавливаем новую высоту
+        }
+
+        // Добавляем прослушивание событий при вводе и отправке формы
+        document.addEventListener('DOMContentLoaded', function () {
+            const titleInput = document.getElementById('title');
+            const contentInput = document.getElementById('content');
+
+            titleInput.addEventListener('input', checkForm);
+            contentInput.addEventListener('input', checkForm);
+
+            // Автоматическое изменение высоты для заголовка
+            titleInput.addEventListener('input', () => {
+                autoResizeTextarea(titleInput);
+            });
+
+            // Автоматическое изменение высоты для содержания
+            contentInput.addEventListener('input', () => {
+                autoResizeTextarea(contentInput);
+            });
+
+            // Устанавливаем начальную высоту для полей
+            autoResizeTextarea(titleInput);
+            autoResizeTextarea(contentInput);
+
+            // Отключаем перенос строки по нажатию Enter для заголовка
+            titleInput.addEventListener('keydown', function (event) {
+                if (event.key === 'Enter') {
+                    event.preventDefault(); // Отменяем действие по умолчанию (перенос строки)
+                }
+            });
+
+            checkForm(); // Проверяем поля при загрузке страницы
+
+            const form = document.querySelector('form');
+            form.addEventListener('submit', checkForm); // Добавляем обработчик для submit
+        });
+    </script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        /* Стили для текстовых полей */
+        .input-field, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+            line-height: 1.5;
+            resize: none; /* Отключаем ручное изменение размера */
+            overflow: hidden; /* Скрываем полосу прокрутки */
+            background-color: #f9f9f9;
+            transition: all 0.3s ease;
+            white-space: pre-wrap; /* Автоматический перенос текста */
+            word-wrap: break-word; /* Перенос длинных слов */
+        }
+
+        .input-field:focus, textarea:focus {
+            border-color: #007BFF;
+            outline: none;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+        }
+
+        /* Стили для оверлея */
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Стили для кастомного confirm */
+        .confirm-box {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .confirm-box p {
+            margin-bottom: 20px;
+            font-size: 18px;
+        }
+
+        .confirm-box button {
+            padding: 10px 20px;
+            margin: 0 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        #customConfirmOK {
+            background: #007BFF;
+            color: white;
+        }
+
+        #customConfirmOK:hover {
+            background: #0056b3;
+        }
+
+        #customConfirmCancel {
+            background: #f1f1f1;
+            color: #333;
+        }
+
+        #customConfirmCancel:hover {
+            background: #ddd;
+        }
+
+        @media (max-width: 768px) {
+            #title, #content {
+                font-size: 14px;
+            }
+
+            .confirm-box, .alert-box {
+                width: 90%;
+            }
+        }
+    </style>
+</head>
+<body>
+{% include 'header.html' %}
+<h1>Создать новую статью</h1>
+<form method="POST">
+    {{ form.hidden_tag() }}  <!-- CSRF-токен -->
+
+    <label for="title">Заголовок:</label>
+    <textarea id="title" name="title" class="input-field" rows="1" placeholder="Заголовок..." minlength="5" maxlength="150" required></textarea><br><br>
+
+    <label for="content">Содержание:</label>
+    <textarea id="content" name="content" rows="10" placeholder="Содержание..." minlength="10" required></textarea><br><br>
+
+    <!-- Кнопка "Опубликовать" будет активна только при заполнении всех полей -->
+    <button type="submit" id="submit-button" class="save-button">Опубликовать</button>
+</form>
+<!-- Кнопка для возврата на главную -->
+<button onclick="goToMain()" class="to-main">На главную</button>
+
+<!-- Оверлей и кастомный confirm -->
+<div id="customConfirmOverlay" class="overlay">
+    <div id="customConfirm" class="confirm-box">
+        <p id="customConfirmMessage">Вы уверены?</p>
+        <button id="customConfirmOK">ОК</button>
+        <button id="customConfirmCancel">Отмена</button>
+    </div>
+</div>
+</body>
+</html>

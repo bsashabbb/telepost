@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="ru">
+<meta charset="UTF-8">
+<head>
+    <title>{{ title }}</title>
+    <script>
+        // Функция для перехода на страницу редактирования
+        function goToEdit(postId) {
+            window.location.href = `/edit/${postId}`;
+        }
+
+        // Функция для подтверждения удаления и отправки запроса на удаление
+        async function deletePost(postId) {
+            const result = await customConfirm('Вы уверены, что хотите удалить этот пост?');
+            if (result) {
+                fetch(`/delete/${postId}`, {
+                    method: 'POST',
+                })
+                    .then(response => {
+                    if (response.ok) {
+                        window.location.href = '/';  // Перенаправляем на главную страницу после успешного удаления
+                    } else {
+                        customAlert('Ошибка при удалении поста.');
+                    }
+                })
+                    .catch(error => {
+                    console.log('Ошибка:', error);
+                    customAlert('Произошла ошибка.');
+                });
+            }
+        }
+
+        // Функция для перехода на страницу RAW
+        function goToRaw(postId) {
+            window.location.href = `/raw/${postId}`;
+        }
+
+        // Кастомный Alert
+        function customAlert(message) {
+            const alertMessage = document.getElementById('customAlertMessage');
+            alertMessage.textContent = message;
+            document.getElementById('customAlertOverlay').style.display = 'flex';
+
+            // Обработчик для кнопки "ОК"
+            document.getElementById('customAlertOK').onclick = function () {
+                hideCustomAlert();
+            };
+        }
+
+        // Кастомный Confirm
+        function customConfirm(message) {
+            return new Promise((resolve) => {
+                const confirmMessage = document.getElementById('customConfirmMessage');
+                confirmMessage.textContent = message;
+                document.getElementById('customConfirmOverlay').style.display = 'flex';
+
+                // Обработчики для кнопок "ОК" и "Отмена"
+                document.getElementById('customConfirmOK').onclick = function () {
+                    resolve(true); // Возвращаем true
+                    hideCustomConfirm();
+                };
+
+                document.getElementById('customConfirmCancel').onclick = function () {
+                    resolve(false); // Возвращаем false
+                    hideCustomConfirm();
+                };
+            });
+        }
+
+        // Скрыть кастомный Alert
+        function hideCustomAlert() {
+            document.getElementById('customAlertOverlay').style.display = 'none';
+        }
+
+        // Скрыть кастомный Confirm
+        function hideCustomConfirm() {
+            document.getElementById('customConfirmOverlay').style.display = 'none';
+        }
+    </script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='code-light.css') }}">
+    <style>
+        /* Стили для оверлея */
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        /* Стили для кастомного Alert */
+        .alert-box {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+        }
+
+        .alert-box p {
+            margin-bottom: 20px;
+            font-size: 18px;
+        }
+
+        .alert-box button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            background: #007BFF;
+            color: white;
+        }
+
+        .alert-box button:hover {
+            background: #0056b3;
+        }
+
+        /* Стили для кастомного Confirm */
+        .confirm-box {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+        }
+
+        .confirm-box p {
+            margin-bottom: 20px;
+            font-size: 18px;
+        }
+
+        .confirm-box button {
+            padding: 10px 20px;
+            margin: 0 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        #customConfirmOK {
+            background: #007BFF;
+            color: white;
+        }
+
+        #customConfirmOK:hover {
+            background: #0056b3;
+        }
+
+        #customConfirmCancel {
+            background: #f1f1f1;
+            color: #333;
+        }
+
+        #customConfirmCancel:hover {
+            background: #ddd;
+        }
+
+        /* Остальные стили из вашего файла */
+        .highlighttable td.linenos {
+            position: sticky;
+            left: 0;
+            z-index: 2;
+        }
+
+        .highlighttable td.linenos::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -1px;
+            bottom: 0;
+            width: 1px;
+            background-color: #f2f2f2;
+        }
+
+        .highlight, .div-table {
+            overflow-x: auto;
+            overflow-y: auto;
+            display: block;
+            margin: 10px auto;
+            max-height: 54vh;
+            border-radius: 8px;
+        }
+
+        .highlighttable {
+            min-width: 100%;
+            border-radius: 8px;
+            width: auto;
+            max-width: 95%;
+        }
+
+        .linenos {
+            width: 1%;
+        }
+
+        table {
+            border-collapse: collapse;
+            font-size: 1em;
+            table-layout: fixed;
+            max-width: 95%;
+        }
+
+        .highlighttable, .highlighttable th, .highlighttable td, .highlighttable tr {
+            border: 1px solid #f1f1f1;
+        }
+
+        .highlighttable th:hover, .highlighttable td:hover {
+            border: 1px solid #f1f1f1;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+            overflow-wrap: break-word !important;
+        }
+
+        th:hover, td:hover {
+            border: 2px solid royalblue;
+            cursor: cell 5px;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        tr:hover {
+            background-color: #fcfcfc;
+        }
+
+        /* Контейнер для кнопки "Copy" */
+        .highlighttable th .copy-button-container {
+            display: flex;
+            justify-content: flex-end; /* Кнопка справа */
+            padding: 5px 10px; /* Отступы внутри заголовка */
+            box-sizing: border-box;
+            position: sticky;
+            right: 0; /* Фиксируем контейнер справа */
+            background-color: #f2f2f2; /* Фон, чтобы перекрывать содержимое */
+            z-index: 22; /* Над псевдоэлементом */
+        }
+
+        /* Псевдоэлемент для верхней границы */
+        .highlighttable th::before {
+            content: '';
+            position: absolute;
+            top: -1px; /* Смещаем на 1px вверх */
+            left: 0;
+            right: 0;
+            height: 1px;
+            background-color: #ddd; /* Цвет границы */
+            z-index: 21; /* Над заголовком */
+        }
+
+        /* Стили для заголовка таблицы */
+        .highlighttable th {
+            position: sticky;
+            top: 0;
+            background-color: #f2f2f2;
+            z-index: 20;
+            padding: 10px; /* Внутренний отступ */
+            border-bottom: 1px solid #ddd; /* Граница снизу */
+            font-weight: bold;
+            text-align: left;
+            width: 100%; /* Заголовок на всю ширину таблицы */
+        }
+
+        /* Стили для кнопки "Copy" */
+        .copy-button {
+            position: sticky; /* Прилипает к правому краю */
+            right: 10px; /* Отступ справа 10px */
+            top: 0; /* Верхний край */
+            padding: 5px 10px;
+            background-color: #4CAF50; /* Зелёный фон */
+            color: white; /* Белый текст */
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9em;
+            z-index: 30; /* Кнопка поверх других элементов */
+            margin-left: auto; /* Выравниваем кнопку вправо */
+            display: block; /* Чтобы margin-left работал */
+        }
+
+        .copy-button:hover {
+            background-color: #45a049; /* Темнее при наведении */
+        }
+
+        span.spoiler {
+            background-color: rgba(128, 128, 128, 0.5);
+            color: transparent;
+            cursor: pointer;
+            transition: color 0.3s;
+            padding-top: 1px;
+        }
+
+        span.spoiler:hover, span.spoiler:focus, span.spoiler:active {
+            color: inherit;
+            background-color: inherit;
+        }
+
+        pre, .code {
+            background-color: #f2f2f2;
+            padding: 5px;
+        }
+
+        .code {
+            width: auto;
+        }
+
+        .highlighttable pre, .highlighttable .code {
+            background-color: #fcfcfc;
+            padding: 5px;
+        }
+
+        .linenos, .linenodiv pre {
+            background-color: #f1f1f1;
+        }
+
+        .to-raw {
+            background-color: #00a3fa;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        /* Стили для <code> и <pre>, исключая те, что внутри .highlighttable */
+        pre:not(.highlighttable pre),
+        code:not(.highlighttable code) {
+            font-size: 0.875em; /* Размер текста */
+            font-weight: bold; /* Жирный шрифт */
+            font-family: 'Courier New', Courier, monospace; /* Моноширинный шрифт */
+            background-color: #ececec; /* Светло-серый фон */
+            border-radius: 4px; /* Закруглённые углы */
+            padding: 0.15rem 0.3rem; /* Внутренние отступы */
+            display: inline-block; /* Не на всю ширину */
+            margin: 2px 0; /* Минимальные внешние отступы */
+            border: 1px solid #ddd; /* Светлая граница */
+            cursor: pointer; /* Курсор для копирования */
+            max-width: 100%; /* Ограничение по ширине */
+            overflow-x: auto; /* Горизонтальная прокрутка при необходимости */
+            white-space: pre-wrap; /* Сохраняем переносы строк */
+            vertical-align: middle; /* Исправляем смещение текста */
+            line-height: normal; /* Нормальный line-height */
+        }
+
+        /* Подсветка при наведении */
+        pre:not(.highlighttable pre):hover,
+        code:not(.highlighttable code):hover {
+            background-color: #e0e0e0; /* Светло-серый фон при наведении */
+            border-color: #ccc; /* Изменение цвета границы */
+        }
+
+        /* Стили для уведомления */
+        .notification {
+            position: fixed;
+            top: 20px; /* Уведомление сверху */
+            left: 50%; /* Центрируем по горизонтали */
+            transform: translateX(-50%); /* Точное центрирование */
+            background-color: #4CAF50; /* Зелёный фон */
+            color: white; /* Белый текст */
+            padding: 15px 30px; /* Больше внутренних отступов */
+            border-radius: 8px; /* Закруглённые углы */
+            font-size: 1em; /* Больше размер текста */
+            z-index: 1000; /* Уведомление поверх других элементов */
+            opacity: 0; /* Скрываем по умолчанию */
+            transition: opacity 0.3s ease-in-out; /* Плавное появление и исчезновение */
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Лёгкая тень */
+        }
+
+        .notification.show {
+            opacity: 1; /* Показываем уведомление */
+        }
+
+        /* Стили для кастомных цитат */
+        .custom-quote {
+            padding: 15px;
+            margin: 10px 0;
+            border-left: 5px solid #6c757d; /* Серый цвет */
+            background-color: #f8f9fa; /* Светло-серый фон */
+            color: #212529; /* Темный текст */
+            font-style: italic;
+            border-radius: 5px;
+            position: relative; /* Для позиционирования иконки */
+        }
+
+        /* Иконка кавычек */
+        .quote-icon {
+            position: absolute;
+            right: 15px;
+            top: 15px;
+            font-size: 24px;
+            color: #6c757d; /* Серый цвет */
+            z-index: 1; /* Иконка поверх текста */
+        }
+
+        /* Текст цитаты */
+        .quote-text {
+            display: block;
+            white-space: pre-line; /* Сохраняем переносы строк */
+            padding-right: 40px; /* Отступ справа, чтобы текст не заходил под иконку */
+        }
+    </style>
+
+
+    <style>
+        /* Остальные стили остаются без изменений */
+
+        /* Адаптация для мобильных */
+        @media (max-width: 768px) {
+        /* Общие правки */
+            .post-content {
+                max-height: 70vh; /* Больше места для контента */
+                font-size: 1rem;  /* Уменьшенный шрифт */
+            }
+
+            /* Таблицы */
+            .div-table {
+                margin: 0 -10px; /* Убираем лишние отступы */
+            }
+
+            /* Кнопки действий */
+            .action-panel button {
+                padding: 8px 12px;
+                font-size: 14px;
+            }
+
+            /* Заголовок */
+            h1 {
+                font-size: 1.5rem;
+                margin-top: 20px;
+            }
+        }
+
+        .copy-button {
+            position: sticky;
+            right: 10px;
+            top: 0;
+            padding: 5px 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            z-index: 30;
+            /* Новые свойства для мобильных */
+            width: fit-content;
+            max-width: 80px;
+        }
+    </style>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='custom-styles.css') }}">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+{% include 'header.html' %}
+<h1>{{ title | e }}</h1>
+
+<div class="post-content" style="white-space: pre-wrap;">{{ content | safe }}</div>
+
+<!-- Панель управления: Изменить и Удалить -->
+<div class="action-panel">
+    {% if author == user %}
+    <!-- Кнопка для редактирования -->
+    <button class="button blue-button" onclick="goToEdit({{ post_id }})">Изменить</button>
+    {% endif %}
+    <button onclick="goToRaw({{ post_id }})" class="to-raw">RAW</button>
+    {% if author == user %}
+    <!-- Кнопка для удаления -->
+    <button class="button red-button" onclick="deletePost({{ post_id }})">Удалить</button>
+    {% endif %}
+</div>
+
+<!-- Кнопка для возврата на главную -->
+<div>
+    <a href="/" class="to-main">На главную</a>
+</div>
+
+<!-- Оверлей и кастомный Alert -->
+<div id="customAlertOverlay" class="overlay">
+    <div class="alert-box">
+        <p id="customAlertMessage">Сообщение</p>
+        <button id="customAlertOK">ОК</button>
+    </div>
+</div>
+
+<!-- Оверлей и кастомный Confirm -->
+<div id="customConfirmOverlay" class="overlay">
+    <div class="confirm-box">
+        <p id="customConfirmMessage">Вы уверены?</p>
+        <button id="customConfirmOK">ОК</button>
+        <button id="customConfirmCancel">Отмена</button>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Находим все блоки цитат
+        const quotes = document.querySelectorAll(".custom-quote");
+
+        // Для каждого блока цитаты добавляем иконку
+        quotes.forEach((quote) => {
+            // Создаем элемент для иконки
+            const icon = document.createElement("div");
+            icon.className = "quote-icon";
+            icon.innerHTML = '<i class="fas fa-quote-right"></i>'; // Иконка из Font Awesome
+
+            // Добавляем иконку в блок цитаты
+            quote.appendChild(icon);
+        });
+    });
+</script>
+
+<script>
+    // Копирование текста из блоков кода внутри .highlighttable
+    document.querySelectorAll('.highlighttable').forEach(table => {
+        // Находим элемент <pre> внутри таблицы
+        const pre = table.querySelector('td.code pre'); // Ищем <pre> внутри ячейки с кодом
+        if (!pre) {
+            console.error('No <pre> element found inside .highlighttable');
+            return;
+        }
+
+        // Создаём заголовок таблицы
+        const headerRow = document.createElement('tr');
+        const headerCell = document.createElement('th');
+        headerCell.colSpan = 2; // Занимает два столбца (нумерация и код)
+        headerCell.style.position = 'sticky'; // Фиксированный заголовок
+        headerCell.style.top = '0'; // Прилипает к верхнему краю
+        headerCell.style.backgroundColor = '#f2f2f2'; // Фон заголовка
+        headerCell.style.zIndex = '20'; // Заголовок поверх других элементов
+        headerCell.style.borderBottom = '1px solid #ddd'; // Граница снизу
+        headerCell.style.width = '100%'; // Заголовок на всю ширину таблицы
+
+        // Создаём кнопку "Copy"
+        const copyButton = document.createElement('button');
+        copyButton.classList.add('copy-button');
+        copyButton.textContent = 'Copy';
+
+        // Добавляем кнопку в заголовок
+        headerCell.appendChild(copyButton);
+
+        // Добавляем заголовок в таблицу
+        headerRow.appendChild(headerCell);
+        table.querySelector('thead')?.remove(); // Удаляем старый заголовок, если есть
+        table.insertBefore(headerRow, table.querySelector('tbody'));
+
+        // Добавляем обработчик клика на кнопку
+        copyButton.addEventListener('click', () => {
+            const codeText = pre.innerText; // Копируем текст из <pre>
+            copyToClipboard(codeText)
+                .then(() => {
+                showNotification('Скопировано!'); // Зелёное уведомление сверху
+            })
+                .catch(() => {
+                showNotification('Ошибка копирования!', 3000); // Уведомление об ошибке
+            });
+        });
+    });
+</script>
+
+<script>
+    document.querySelectorAll('td:not(.highlighttable td), th:not(.highlighttable th)').forEach(element => {
+        // Добавляем обработчик клика
+        element.addEventListener('click', () => {
+            copyToClipboard(element.innerText)
+                .then(() => {
+                showNotification('Скопировано!'); // Зелёное уведомление сверху
+            })
+                .catch(() => {
+                showNotification('Ошибка копирования!', 3000); // Уведомление об ошибке
+            });
+        });
+    });
+</script>
+
+<script>
+    // Функция для копирования текста в буфер обмена
+    function copyToClipboard(text) {
+        if (navigator.clipboard) {
+            return navigator.clipboard.writeText(text);
+        } else {
+            // Fallback для старых браузеров
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                document.execCommand('copy');
+                return Promise.resolve();
+            } catch (err) {
+                return Promise.reject(err);
+            } finally {
+                document.body.removeChild(textarea);
+            }
+        }
+    }
+
+    // Функция для показа уведомления
+    function showNotification(message, duration = 2000) {
+        const notification = document.createElement('div');
+        notification.classList.add('notification');
+        notification.textContent = message;
+        document.body.appendChild(notification);
+
+        // Показываем уведомление
+        setTimeout(() => {
+            notification.classList.add('show');
+        }, 10);
+
+        // Убираем уведомление через указанное время
+        setTimeout(() => {
+            notification.classList.remove('show');
+            setTimeout(() => {
+                document.body.removeChild(notification);
+            }, 300); // Ждём завершения анимации
+        }, duration);
+    }
+
+    // Копирование текста из <pre> и <code>, исключая те, что внутри .highlighttable
+    document.querySelectorAll('pre:not(.highlighttable pre), code:not(.highlighttable code)').forEach(element => {
+        // Добавляем обработчик клика
+        element.addEventListener('click', () => {
+            copyToClipboard(element.innerText)
+                .then(() => {
+                showNotification('Скопировано!'); // Зелёное уведомление сверху
+            })
+                .catch(() => {
+                showNotification('Ошибка копирования!', 3000); // Уведомление об ошибке
+            });
+        });
+    });
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const postContent = document.querySelector('.post-content');
+        const tables = postContent.querySelectorAll('table:not(.highlighttable)');
+
+        tables.forEach(table => {
+            const wrapper = document.createElement('div');
+            wrapper.classList.add('div-table');
+            table.parentNode.insertBefore(wrapper, table);
+            wrapper.appendChild(table);
+        });
+    });
+</script>
+</body>
+</html>

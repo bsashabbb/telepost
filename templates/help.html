@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Полное руководство по TelePost</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        /* Основные стили помощи */
+        :root {
+            --primary-color: #3498db;
+            --text-color: #2c3e50;
+            --warning-color: #e74c3c;
+        }
+
+        .help-wrapper {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: 30px;
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+
+        /* Боковая навигация */
+        .help-nav {
+            position: sticky;
+            top: 100px;
+            height: fit-content;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+        }
+
+        .nav-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .nav-item {
+            margin: 12px 0;
+        }
+
+        .nav-link {
+            color: var(--text-color);
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .nav-link:hover {
+            color: var(--primary-color);
+            transform: translateX(5px);
+        }
+
+        /* Контент */
+        .help-content {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+        }
+
+        .section {
+            margin-bottom: 50px;
+        }
+
+        .section h2 {
+            color: var(--primary-color);
+            border-bottom: 2px solid;
+            padding-bottom: 10px;
+            margin-bottom: 25px;
+        }
+
+        /* Стили для примеров кода */
+        .markdown-example {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        /* Разворачивающиеся блоки */
+        .collapsible {
+            background-color: #f8f9fa;
+            color: var(--text-color);
+            cursor: pointer;
+            padding: 15px;
+            width: 100%;
+            border: none;
+            text-align: left;
+            outline: none;
+            font-size: 16px;
+            border-radius: 8px;
+            margin: 10px 0;
+            transition: background-color 0.3s;
+        }
+
+        .collapsible:hover {
+            background-color: #e8f5e9;
+        }
+
+        .collapsible.active {
+            background-color: #e8f5e9;
+        }
+
+        .content {
+            padding: 0 15px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        /* Предупреждения */
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .alert-warning {
+            background: #fff3e0;
+            border-left: 4px solid #ff9800;
+        }
+
+        .alert-danger {
+            background: #fce4ec;
+            border-left: 4px solid #e91e63;
+        }
+
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            .help-wrapper {
+                grid-template-columns: 1fr;
+            }
+
+            .help-nav {
+                position: static;
+                margin-bottom: 30px;
+            }
+        }
+    </style>
+
+    <style>
+        /* Стили для мобильных */
+        @media (max-width: 768px) {
+            .help-wrapper {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .help-nav {
+                position: static;
+                padding: 10px;
+            }
+
+            .nav-link {
+                padding: 8px;
+                font-size: 14px;
+            }
+
+            /* Скрываем иконки в меню */
+            .nav-link i {
+                display: none;
+            }
+
+            .help-content {
+                padding: 15px;
+            }
+
+            .section h2 {
+                font-size: 1.3rem;
+            }
+
+            /* Примеры кода */
+            .markdown-example pre {
+                font-size: 12px;
+            }
+        }
+
+        /* Планшеты */
+        @media (min-width: 769px) and (max-width: 992px) {
+            .help-nav {
+                width: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+{% include 'header.html' %}
+
+<div class="help-wrapper">
+    <!-- Боковое меню -->
+    <nav class="help-nav">
+        <ul class="nav-list">
+            <li class="nav-item"><a href="#basics" class="nav-link">📌 Основы работы</a></li>
+            <li class="nav-item"><a href="#markdown" class="nav-link">✏️ Синтаксис Markdown</a></li>
+            <li class="nav-item"><a href="#html" class="nav-link">🌐 HTML-форматирование</a></li>
+            <li class="nav-item"><a href="#security" class="nav-link">🔐 Безопасность</a></li>
+            <li class="nav-item"><a href="#tech" class="nav-link">⚙️ Технические данные</a></li>
+            <li class="nav-item"><a href="#contacts" class="nav-link">📮 Контакты</a></li>
+        </ul>
+    </nav>
+
+    <!-- Основной контент -->
+    <div class="help-content">
+        <!-- Раздел 1: Основы -->
+        <section id="basics" class="section">
+            <h2>📌 Основы работы с платформой</h2>
+
+            <h3>Создание поста</h3>
+            <ol>
+                <li>Нажмите кнопку <strong>«+»</strong> в правом верхнем углу.</li>
+                <li>Заполните обязательные поля:
+                    <ul>
+                        <li>Заголовок (от 5 до 150 символов).</li>
+                        <li>Содержание с поддержкой Markdown или HTML.</li>
+                    </ul>
+                </li>
+                <li>Нажмите <strong>«Опубликовать»</strong>.</li>
+            </ol>
+
+            <h3>Редактирование поста</h3>
+            <ol>
+                <li>Перейдите на страницу поста.</li>
+                <li>Нажмите кнопку <strong>«Изменить»</strong>.</li>
+                <li>Внесите изменения и нажмите <strong>«Сохранить»</strong>.</li>
+            </ol>
+
+            <h3>Удаление поста</h3>
+            <ol>
+                <li>Перейдите на страницу поста.</li>
+                <li>Нажмите кнопку <strong>«Удалить»</strong>.</li>
+                <li>Подтвердите удаление.</li>
+            </ol>
+
+            <div class="alert alert-warning">
+                ⚠️ Все посты привязаны к вашему текущему IP-адресу! При его изменении вы потеряете доступ к редактированию.
+            </div>
+        </section>
+
+        <!-- Раздел 2: Markdown -->
+        <section id="markdown" class="section">
+            <h2>✏️ Синтаксис Markdown</h2>
+
+            <!-- Разворачивающиеся блоки -->
+            <button type="button" class="collapsible">📝 Основы Markdown</button>
+            <div class="content">
+                <h3>Заголовки</h3>
+                <pre>
+# Заголовок 1
+## Заголовок 2
+### Заголовок 3
+#### Заголовок 4
+##### Заголовок 5
+###### Заголовок 6</pre>
+
+                <h3>Текст</h3>
+                <pre>
+**Жирный текст**
+*Курсив*
+~~Зачёркнутый текст~~
+==Выделенный текст==
+[color:red Красный текст]
+[color:blue:yellow Синий текст с жёлтым фоном]
+~Подчёркнутый текст~</pre>
+
+                <h3>Списки</h3>
+                <pre>
+- Неупорядоченный список
+1. Упорядоченный список
+   - Вложенный список</pre>
+            </div>
+
+            <button type="button" class="collapsible">📊 Таблицы</button>
+            <div class="content">
+                <pre>
+| Заголовок 1 | Заголовок 2 |
+|-------------|-------------|
+| Ячейка 1    | Ячейка 2    |
+| *Курсив*    | **Жирный**  |</pre>
+            </div>
+
+            <button type="button" class="collapsible">📦 Специальные блоки</button>
+            <div class="content">
+                <pre>
+!!!note Это пример заметки.
+!!!warning Это пример предупреждения.
+!!!info Это пример информации.
+!!!tip Это пример совета.
+!!!error Это пример ошибки.
+!!!success Это пример успеха.
+!!!important Это пример важного сообщения.
+!!!code Это пример кода.
+!!!lightbulb Это пример лампочки.
+!!!pencil Это пример карандаша.
+!!!plain Это пример примечания без иконки.
+!!!random Это несуществующий тег, отобразится как текст.</pre>
+            </div>
+
+            <button type="button" class="collapsible">🔗 Ссылки и изображения</button>
+            <div class="content">
+                <h3>Ссылки</h3>
+                <pre>
+[Текст ссылки](https://example.com "Всплывающая подсказка")</pre>
+
+                <h3>Изображения</h3>
+                <pre>
+![Альтернативный текст](https://example.com/image.jpg "Всплывающая подсказка")</pre>
+            </div>
+
+            <button type="button" class="collapsible">💻 Код</button>
+            <div class="content">
+                <h3>Встроенный код</h3>
+                <pre>
+Используйте `print("Hello, World!")` для вывода текста.</pre>
+
+                <h3>Блоки кода</h3>
+                <pre>
+```python
+def hello():
+    print("Hello, World!")
+```
+~~~
+console.log("Hello, World!");
+~~~</pre>
+            </div>
+
+            <button type="button" class="collapsible">🎨 Дополнительные стили</button>
+            <div class="content">
+                <h3>Спойлеры</h3>
+                <pre>
+||Спойлер||</pre>
+
+                <h3>Верхний и нижний индексы</h3>
+                <pre>
+x^2^ → x² (верхний индекс)
+H+2+O → H₂O (нижний индекс)</pre>
+            </div>
+        </section>
+
+        <!-- Раздел 3: HTML -->
+        <section id="html" class="section">
+            <h2>🌐 HTML-форматирование</h2>
+
+            <button type="button" class="collapsible">📝 Основы HTML</button>
+            <div class="content">
+                <h3>Заголовки</h3>
+                <pre>
+&lt;h1&gt;Заголовок 1&lt;/h1&gt;
+&lt;h2&gt;Заголовок 2&lt;/h2&gt;
+&lt;h3&gt;Заголовок 3&lt;/h3&gt;</pre>
+
+                <h3>Текст</h3>
+                <pre>
+&lt;strong&gt;Жирный текст&lt;/strong&gt;
+&lt;em&gt;Курсив&lt;/em&gt;
+&lt;u&gt;Подчёркнутый текст&lt;/u&gt;
+&lt;mark&gt;Выделенный текст&lt;/mark&gt;</pre>
+
+                <h3>Списки</h3>
+                <pre>
+&lt;ul&gt;
+  &lt;li&gt;Неупорядоченный список&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Упорядоченный список&lt;/li&gt;
+&lt;/ol&gt;</pre>
+            </div>
+
+            <button type="button" class="collapsible">📦 Мультимедиа</button>
+            <div class="content">
+                <h3>Изображения</h3>
+                <pre>
+&lt;img src="https://example.com/image.jpg" alt="Альтернативный текст" title="Всплывающая подсказка"&gt;</pre>
+
+                <h3>Видео</h3>
+                <pre>
+&lt;video controls&gt;
+  &lt;source src="https://example.com/video.mp4" type="video/mp4"&gt;
+  Ваш браузер не поддерживает видео.
+&lt;/video&gt;</pre>
+
+                <h3>Аудио</h3>
+                <pre>
+&lt;audio controls&gt;
+  &lt;source src="https://example.com/audio.mp3" type="audio/mpeg"&gt;
+  Ваш браузер не поддерживает аудио.
+&lt;/audio&gt;</pre>
+            </div>
+
+            <button type="button" class="collapsible">📊 Таблицы</button>
+            <div class="content">
+                <pre>
+&lt;table&gt;
+  &lt;tr&gt;
+    &lt;th&gt;Заголовок 1&lt;/th&gt;
+    &lt;th&gt;Заголовок 2&lt;/th&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;td&gt;Ячейка 1&lt;/td&gt;
+    &lt;td&gt;Ячейка 2&lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/table&gt;</pre>
+            </div>
+        </section>
+
+        <!-- Раздел 4: Безопасность -->
+        <section id="security" class="section">
+            <h2>🔐 Политика безопасности</h2>
+
+            <h3>Что мы храним:</h3>
+            <ul>
+                <li>IP-адрес автора.</li>
+                <li>Данные статьи (заголовок и содержание).</li>
+            </ul>
+
+            <div class="alert alert-danger">
+                ❗ Никогда не публикуйте:
+                <ul>
+                    <li>Пароли.</li>
+                    <li>Банковские реквизиты.</li>
+                    <li>Персональные данные.</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Раздел 5: Технические данные -->
+        <section id="tech" class="section">
+            <h2>⚙️ Технические требования</h2>
+
+            <h3>API Endpoints:</h3>
+            <a href="/api-docs" target="_blank">Документация API</a>
+        </section>
+
+        <!-- Раздел 6: Контакты -->
+        <section id="contacts" class="section">
+            <h2>📮 Связь с нами</h2>
+
+            <div class="contact-methods">
+                <div class="contact-card">
+                    <h3>💬 Поддержка</h3>
+                    <p>Telegram: <a href="https://t.me/TelePost_site" target="_blank">@TelePost_site</a></p>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+
+<!-- Скрипт для разворачивающихся блоков -->
+<script>
+    const collapsibles = document.querySelectorAll(".collapsible");
+    collapsibles.forEach((collapsible) => {
+        collapsible.addEventListener("click", function () {
+            this.classList.toggle("active");
+            const content = this.nextElementSibling;
+            if (content.style.maxHeight) {
+                content.style.maxHeight = null;
+            } else {
+                content.style.maxHeight = content.scrollHeight + "px";
+            }
+        });
+    });
+</script>
+
+<!-- Скрипт для плавной прокрутки -->
+<script>
+    document.querySelectorAll('.nav-link').forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const targetId = this.getAttribute('href').substring(1);
+            const targetSection = document.getElementById(targetId);
+            window.scrollTo({
+                top: targetSection.offsetTop - 100,
+                behavior: 'smooth'
+            });
+        });
+    });
+</script>
+</body>
+</html>
