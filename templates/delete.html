@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Подтверждение удаления</title>
+    <style>
+        /* Основное оформление страницы */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 97vh;
+        }
+
+        /* Модальное окно */
+        .modal {
+            display: flex; /* Сразу показываем модальное окно */
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5); /* Полупрозрачный фон */
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Стили для кастомного Confirm */
+        .confirm-box {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+        }
+
+        .confirm-box p {
+            margin-bottom: 20px;
+            font-size: 18px;
+        }
+
+        /* Общий стиль для кнопок */
+        button {
+            padding: 10px 20px; /* Внутренние отступы */
+            margin: 0 5px; /* Отступы между кнопками */
+            border: none; /* Без границ */
+            border-radius: 5px; /* Закругленные углы */
+            cursor: pointer; /* Указатель мыши в виде руки */
+            font-size: 16px; /* Размер шрифта */
+            color: white; /* Белый текст */
+            text-align: center; /* Выравнивание текста по центру */
+            transition: background-color 0.3s ease; /* Плавный переход цвета */
+        }
+
+        /* Кнопка "ОК" (синяя) */
+        #customConfirmOK {
+            background-color: #007BFF; /* Синий цвет фона */
+        }
+
+        #customConfirmOK:hover {
+            background-color: #0056b3; /* Темно-синий при наведении */
+        }
+
+        /* Кнопка "Отмена" (серая) */
+        #customConfirmCancel {
+            background-color: #f1f1f1; /* Светло-серый цвет фона */
+            color: #333; /* Темный текст */
+        }
+
+        #customConfirmCancel:hover {
+            background-color: #ddd; /* Темно-серый при наведении */
+        }
+    </style>
+</head>
+<body>
+{% include 'header.html' %}
+
+<!-- Модальное окно подтверждения -->
+<div id="confirm-modal" class="modal">
+    <div class="confirm-box">
+        <p>Вы уверены, что хотите удалить этот пост?</p>
+        <div style="display: flex; justify-content: space-around;">
+            <form id="delete-form" action="{{ url_for('delete_post', post_id=post_id) }}" method="POST">
+                <button type="submit" id="customConfirmOK">ОК</button>
+            </form>
+            <button id="customConfirmCancel" onclick="window.location.href='{{ url_for('post', post_id=post_id) }}'">Назад</button>
+        </div>
+    </div>
+</div>
+</body>
+</html>
